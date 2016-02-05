@@ -1,0 +1,38 @@
+{
+  "version": "1.0.0-*",
+  "description": "Convert HTML, PDF, and Word documents into normalized HTML, plain text, or sets of JSON Answer units using IBM Watson Services Document Conversion.",
+  "authors": [ "Damien Dennehy" ],
+  "tags": [ "ibm watson watson.documentconversion document conversion" ],
+  "projectUrl": "http://watsonnet.readthedocs.org/en/latest",
+  "licenseUrl": "https://github.com/DamienDennehy/Watson.DocumentConversion/blob/master/LICENSE",
+  "iconUrl": "https://raw.githubusercontent.com/DamienDennehy/Watson.DocumentConversion/master/icon.png",
+  "copyright": "Copyright © 2015-2016",
+  "packInclude": {
+    "readme.txt": "readme.txt"
+  },
+  "frameworks": {
+    "net45": {
+      "frameworkAssemblies": {
+        "System.Net": "4.0.0.0"
+      }
+    },
+    "dotnet5.2": {
+      "dependencies": {
+        "Microsoft.CSharp": "4.0.0",
+        "System.Collections": "4.0.0",
+        "System.Diagnostics.Debug": "4.0.0",
+        "System.IO": "4.0.0",
+        "System.Linq": "4.0.0",
+        "System.Net.Http": "4.0.0",
+        "System.Runtime": "4.0.0",
+        "System.Runtime.Extensions": "4.0.0",
+        "System.Runtime.Serialization.Primitives": "4.0.0",
+        "System.Threading.Tasks": "4.0.0"
+      }
+    }
+  },
+  "dependencies": {
+    "Watson.Core": "1.0.0-build33",
+    "Newtonsoft.Json": "8.0.2"
+  }
+}
