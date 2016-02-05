@@ -13,7 +13,8 @@
   "frameworks": {
     "net45": {
       "frameworkAssemblies": {
-        "System.Net": "4.0.0.0"
+        "System.Net": "4.0.0.0",
+        "System.Runtime.Serialization": "4.0.0.0"
       }
     },
     "dotnet5.2": {
