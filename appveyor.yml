@@ -1,28 +1,31 @@
 version: 1.0.0-build{build}
 install:
 - ps: >-
-    dnvm install 1.0.0-rc1-update1
+	dnvm install 1.0.0-rc1-update1
 
-    dnvm use 1.0.0-rc1-update1
-
-    nuget sources add -Name MyGet-CI -Source http://myget.org/f/damiendennehy/
+	dnvm use 1.0.0-rc1-update1
+	
+	nuget sources add -Name MyGet-CI -Source http://myget.org/f/damiendennehy/
+cache:
+- C:\Users\appveyor\.dnx\runtimes
+- C:\Users\appveyor\.dnx\packages
 before_build:
 - ps: >-
-    dnu restore
+	dnu restore
 
-    (Get-Content src\Watson.DocumentConversion\project.json).replace('"version": "1.0.0-*",', '"version": "' + $env:APPVEYOR_BUILD_VERSION + '",') | Set-Content src\Watson.DocumentConversion\project.json
+	(Get-Content src\Watson.DocumentConversion\project.json).replace('"version": "1.0.0-*",', '"version": "' + $env:APPVEYOR_BUILD_VERSION + '",') | Set-Content src\Watson.DocumentConversion\project.json
 build:
   verbosity: minimal
 test_script:
 - ps: >-
-    cd test\Watson.DocumentConversion.Tests
+	cd test\Watson.DocumentConversion.Tests
 
-    dnx test
+	dnx test
 artifacts:
 - path: artifacts\bin\Watson.DocumentConversion\Debug\*.nupkg
 deploy:
 - provider: NuGet
   server: https://www.myget.org/F/damiendennehy/api/v2/package
   api_key:
-    secure: VKpWEiDhfRypjFf7MgnSlOJBdzQ1sOT87+aUCzjpj0wAFE8pOLJxcbXPR/6qqVBU
+	secure: VKpWEiDhfRypjFf7MgnSlOJBdzQ1sOT87+aUCzjpj0wAFE8pOLJxcbXPR/6qqVBU
   symbol_server: https://nuget.symbolsource.org/MyGet/damiendennehy
