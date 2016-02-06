@@ -1,4 +1,7 @@
-﻿namespace Watson.DocumentConversion
+﻿using System.IO;
+using Watson.DocumentConversion.Models;
+
+namespace Watson.DocumentConversion
 {
     /// <summary>
     ///     The Watson Document Conversion service converts a single HTML, PDF, or Microsoft Word document
@@ -8,5 +11,25 @@
     /// </summary>
     public interface IDocumentConversionService
     {
+        /// <summary>
+        ///     Converts a document to Answer Units.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        IAnswers ConvertDocumentToAnswer(Stream file);
+
+        /// <summary>
+        ///     Converts a document to HTML.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        string ConvertDocumentToHtml(Stream file);
+
+        /// <summary>
+        ///     Converts a document to Text.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        string ConvertDocumentToText(Stream file);
     }
 }

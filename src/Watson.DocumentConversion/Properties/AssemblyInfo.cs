@@ -13,5 +13,5 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: InternalsVisibleTo("Watson.PersonalityInsights.Tests")]
+[assembly: InternalsVisibleTo("Watson.DocumentConversion.Tests")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
