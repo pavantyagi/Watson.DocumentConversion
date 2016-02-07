@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -43,12 +44,14 @@ namespace Watson.DocumentConversion.RequestBuilders
                 JsonConvert.SerializeObject(fileType, Formatting.None, stringEnumConverter).Replace("\"", "");
             var serializedConfig = config.ToString(Formatting.None, stringEnumConverter);
 
+            var streamContent = new StreamContent(file);
+            streamContent.Headers.ContentType = MediaTypeHeaderValue.Parse(serializedFileType);
+
             // ReSharper disable once ExceptionNotDocumented
             var content = new MultipartFormDataContent($"{DateTime.UtcNow.Ticks}")
             {
-                {new StringContent(serializedFileType), "type"},
                 {new StringContent(serializedConfig), "config"},
-                {new StreamContent(file), nameof(file)}
+                {streamContent, nameof(file)}
             };
 
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, url)

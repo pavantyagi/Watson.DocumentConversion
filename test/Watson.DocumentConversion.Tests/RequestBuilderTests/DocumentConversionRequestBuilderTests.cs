@@ -59,18 +59,16 @@ namespace Watson.DocumentConversion.Tests.RequestBuilderTests
                     (StreamContent) content.FirstOrDefault(x => x.Headers.ContentDisposition.Name == "file");
                 var configContent =
                     (StringContent) content.FirstOrDefault(x => x.Headers.ContentDisposition.Name == "config");
-                var type = (StringContent) content.FirstOrDefault(x => x.Headers.ContentDisposition.Name == "type");
 
                 Assert.NotNull(fileContent);
                 Assert.NotNull(configContent);
-                Assert.NotNull(type);
 
                 var file = await fileContent.ReadAsByteArrayAsync().ConfigureAwait(false);
 
                 Assert.Equal(fileLength, file.Length);
                 Assert.Equal("{\"conversion_target\":\"NORMALIZED_TEXT\"}",
                     await configContent.ReadAsStringAsync().ConfigureAwait(false));
-                Assert.Equal("text/xhtml+xml", await type.ReadAsStringAsync().ConfigureAwait(false));
+                Assert.Equal("text/xhtml+xml", fileContent.Headers.ContentType.MediaType);
             }
         }
 
@@ -96,11 +94,9 @@ namespace Watson.DocumentConversion.Tests.RequestBuilderTests
                     (StreamContent) content.FirstOrDefault(x => x.Headers.ContentDisposition.Name == "file");
                 var configContent =
                     (StringContent) content.FirstOrDefault(x => x.Headers.ContentDisposition.Name == "config");
-                var type = (StringContent) content.FirstOrDefault(x => x.Headers.ContentDisposition.Name == "type");
 
                 Assert.NotNull(fileContent);
                 Assert.NotNull(configContent);
-                Assert.NotNull(type);
 
                 var file = await fileContent.ReadAsByteArrayAsync().ConfigureAwait(false);
 
@@ -108,7 +104,7 @@ namespace Watson.DocumentConversion.Tests.RequestBuilderTests
                 Assert.Equal(
                     "{\"answer_units\":{\"selector_tags\":[\"h1\",\"h2\",\"h3\",\"h4\",\"h5\",\"h6\"]},\"conversion_target\":\"ANSWER_UNITS\"}",
                     await configContent.ReadAsStringAsync().ConfigureAwait(false));
-                Assert.Equal("application/pdf", await type.ReadAsStringAsync().ConfigureAwait(false));
+                Assert.Equal("application/pdf", fileContent.Headers.ContentType.MediaType);
             }
         }
 
@@ -134,11 +130,9 @@ namespace Watson.DocumentConversion.Tests.RequestBuilderTests
                     (StreamContent) content.FirstOrDefault(x => x.Headers.ContentDisposition.Name == "file");
                 var configContent =
                     (StringContent) content.FirstOrDefault(x => x.Headers.ContentDisposition.Name == "config");
-                var type = (StringContent) content.FirstOrDefault(x => x.Headers.ContentDisposition.Name == "type");
 
                 Assert.NotNull(fileContent);
                 Assert.NotNull(configContent);
-                Assert.NotNull(type);
 
                 var file = await fileContent.ReadAsByteArrayAsync().ConfigureAwait(false);
 
@@ -146,7 +140,7 @@ namespace Watson.DocumentConversion.Tests.RequestBuilderTests
                 Assert.Equal(
                     "{\"normalize_html\":{\"exclude_tags_completely\":[\"script\",\"sup\"],\"exclude_tags_keep_content\":[\"font\",\"em\",\"span\"],\"keep_content\":{\"xpaths\":[\"//body/div[@id='content']\"]},\"exclude_content\":{\"xpaths\":[\"//*[@id='footer']\",\"//*[@id='navigation']\"]},\"keep_tag_attributes\":[\"*\"]},\"conversion_target\":\"NORMALIZED_HTML\"}",
                     await configContent.ReadAsStringAsync().ConfigureAwait(false));
-                Assert.Equal("application/pdf", await type.ReadAsStringAsync().ConfigureAwait(false));
+                Assert.Equal("application/pdf", fileContent.Headers.ContentType.MediaType);
             }
         }
 
@@ -172,11 +166,9 @@ namespace Watson.DocumentConversion.Tests.RequestBuilderTests
                     (StreamContent) content.FirstOrDefault(x => x.Headers.ContentDisposition.Name == "file");
                 var configContent =
                     (StringContent) content.FirstOrDefault(x => x.Headers.ContentDisposition.Name == "config");
-                var type = (StringContent) content.FirstOrDefault(x => x.Headers.ContentDisposition.Name == "type");
 
                 Assert.NotNull(fileContent);
                 Assert.NotNull(configContent);
-                Assert.NotNull(type);
 
                 var file = await fileContent.ReadAsByteArrayAsync().ConfigureAwait(false);
 
@@ -184,7 +176,7 @@ namespace Watson.DocumentConversion.Tests.RequestBuilderTests
                 Assert.Equal(
                     "{\"pdf\":{\"heading\":{\"fonts\":[{\"level\":1,\"min_size\":24},{\"level\":2,\"min_size\":18,\"max_size\":23,\"bold\":true},{\"level\":3,\"min_size\":14,\"max_size\":17,\"italic\":false},{\"level\":4,\"min_size\":12,\"max_size\":13,\"name\":\"Times New Roman\"}]}},\"conversion_target\":\"NORMALIZED_TEXT\"}",
                     await configContent.ReadAsStringAsync().ConfigureAwait(false));
-                Assert.Equal("application/pdf", await type.ReadAsStringAsync().ConfigureAwait(false));
+                Assert.Equal("application/pdf", fileContent.Headers.ContentType.MediaType);
             }
         }
 
@@ -210,11 +202,9 @@ namespace Watson.DocumentConversion.Tests.RequestBuilderTests
                     (StreamContent) content.FirstOrDefault(x => x.Headers.ContentDisposition.Name == "file");
                 var configContent =
                     (StringContent) content.FirstOrDefault(x => x.Headers.ContentDisposition.Name == "config");
-                var type = (StringContent) content.FirstOrDefault(x => x.Headers.ContentDisposition.Name == "type");
 
                 Assert.NotNull(fileContent);
                 Assert.NotNull(configContent);
-                Assert.NotNull(type);
 
                 var file = await fileContent.ReadAsByteArrayAsync().ConfigureAwait(false);
 
@@ -222,7 +212,7 @@ namespace Watson.DocumentConversion.Tests.RequestBuilderTests
                 Assert.Equal(
                     "{\"word\":{\"heading\":{\"fonts\":[{\"level\":1,\"min_size\":24},{\"level\":2,\"min_size\":18,\"max_size\":23,\"bold\":true},{\"level\":3,\"min_size\":14,\"max_size\":17,\"italic\":false},{\"level\":4,\"min_size\":12,\"max_size\":13,\"name\":\"Times New Roman\"}],\"styles\":[{\"level\":1,\"names\":[\"pullout heading\",\"pulloutheading\",\"heading\"]},{\"level\":2,\"names\":[\"subtitle\"]}]}},\"conversion_target\":\"NORMALIZED_TEXT\"}",
                     await configContent.ReadAsStringAsync().ConfigureAwait(false));
-                Assert.Equal("application/msword", await type.ReadAsStringAsync().ConfigureAwait(false));
+                Assert.Equal("application/msword", fileContent.Headers.ContentType.MediaType);
             }
         }
     }

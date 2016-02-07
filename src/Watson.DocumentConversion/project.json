@@ -33,7 +33,7 @@
     }
   },
   "dependencies": {
-    "Watson.Core": "1.0.0-build33",
+    "Watson.Core": "1.0.0-build34",
     "Newtonsoft.Json": "8.0.2"
   }
 }
