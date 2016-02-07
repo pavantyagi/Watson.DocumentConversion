@@ -20,7 +20,7 @@ namespace Watson.DocumentConversion
         string ServiceUrl { get; }
 
         /// <summary>
-        ///     The API's version.
+        ///     The Api's version.
         /// </summary>
         string Version { get; }
 

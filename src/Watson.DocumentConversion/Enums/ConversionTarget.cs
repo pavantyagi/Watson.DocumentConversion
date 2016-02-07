@@ -3,9 +3,9 @@
 namespace Watson.DocumentConversion.Enums
 {
     /// <summary>
-    ///     The output format that you want to convert the document to.
+    ///     The output format that the document should be converted to.
     /// </summary>
-    internal enum ConversionTarget
+    public enum ConversionTarget
     {
         /// <summary>
         ///     Html
