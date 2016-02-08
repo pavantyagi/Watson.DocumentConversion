@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -10,6 +9,8 @@ using Watson.DocumentConversion.Enums;
 using Watson.DocumentConversion.RequestBuilders;
 using Watson.DocumentConversion.Tests.Mocks;
 using Xunit;
+
+// ReSharper disable PossibleNullReferenceException
 
 // ReSharper disable ExceptionNotDocumented
 
@@ -27,6 +28,50 @@ namespace Watson.DocumentConversion.Tests.RequestBuilderTests
             new object[] {null, new MemoryStream(), null, null, null}
         };
 
+        public static IEnumerable<object[]> BuildRequestMessageData => new[]
+        {
+            new object[]
+            {
+                3384, FileType.Html, ConversionTarget.Text, null, "{\"conversion_target\":\"NORMALIZED_TEXT\"}",
+                "text/html"
+            },
+            new object[]
+            {
+                54654, FileType.Html, ConversionTarget.Text, MockConfig.MockHtmlConfig,
+                "{\"normalize_html\":{\"exclude_tags_completely\":[\"script\",\"sup\"],\"exclude_tags_keep_content\":[\"font\",\"em\",\"span\"],\"keep_content\":{\"xpaths\":[\"//body/div[@id='content']\"]},\"exclude_content\":{\"xpaths\":[\"//*[@id='footer']\",\"//*[@id='navigation']\"]},\"keep_tag_attributes\":[\"*\"]},\"conversion_target\":\"NORMALIZED_TEXT\"}",
+                "text/html"
+            },
+            new object[]
+            {
+                444, FileType.MsWordDoc, ConversionTarget.Html, MockConfig.MockMsWordConfig,
+                "{\"word\":{\"heading\":{\"fonts\":[{\"level\":1,\"min_size\":24},{\"level\":2,\"min_size\":18,\"max_size\":23,\"bold\":true},{\"level\":3,\"min_size\":14,\"max_size\":17,\"italic\":false},{\"level\":4,\"min_size\":12,\"max_size\":13,\"name\":\"Times New Roman\"}],\"styles\":[{\"level\":1,\"names\":[\"pullout heading\",\"pulloutheading\",\"heading\"]},{\"level\":2,\"names\":[\"subtitle\"]}]}},\"conversion_target\":\"NORMALIZED_HTML\"}",
+                "application/msword"
+            },
+            new object[]
+            {
+                4545645, FileType.MsWordDocx, ConversionTarget.Html, MockConfig.MockMsWordConfig,
+                "{\"word\":{\"heading\":{\"fonts\":[{\"level\":1,\"min_size\":24},{\"level\":2,\"min_size\":18,\"max_size\":23,\"bold\":true},{\"level\":3,\"min_size\":14,\"max_size\":17,\"italic\":false},{\"level\":4,\"min_size\":12,\"max_size\":13,\"name\":\"Times New Roman\"}],\"styles\":[{\"level\":1,\"names\":[\"pullout heading\",\"pulloutheading\",\"heading\"]},{\"level\":2,\"names\":[\"subtitle\"]}]}},\"conversion_target\":\"NORMALIZED_HTML\"}",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            },
+            new object[]
+            {
+                55464564, FileType.Pdf, ConversionTarget.AnswerUnits, MockConfig.MockAnswerUnitConfig,
+                "{\"answer_units\":{\"selector_tags\":[\"h1\",\"h2\",\"h3\",\"h4\",\"h5\",\"h6\"]},\"conversion_target\":\"ANSWER_UNITS\"}",
+                "application/pdf"
+            },
+            new object[]
+            {
+                55464564, FileType.Pdf, ConversionTarget.Text, MockConfig.MockPdfConfig,
+                "{\"pdf\":{\"heading\":{\"fonts\":[{\"level\":1,\"min_size\":24},{\"level\":2,\"min_size\":18,\"max_size\":23,\"bold\":true},{\"level\":3,\"min_size\":14,\"max_size\":17,\"italic\":false},{\"level\":4,\"min_size\":12,\"max_size\":13,\"name\":\"Times New Roman\"}]}},\"conversion_target\":\"NORMALIZED_TEXT\"}",
+                "application/pdf"
+            },
+            new object[]
+            {
+                3384, FileType.Xml, ConversionTarget.Text, null, "{\"conversion_target\":\"NORMALIZED_TEXT\"}",
+                "application/xhtml+xml"
+            }
+        };
+
         [Theory, MemberData("BuildRequestMessageExceptionData")]
         public void BuildRequestMessage_WithNullArguments_ThrowsArgumentNullException(string url, Stream file,
             FileType fileType, ConversionTarget conversionTarget, JObject config)
@@ -39,16 +84,19 @@ namespace Watson.DocumentConversion.Tests.RequestBuilderTests
             Assert.IsType<ArgumentNullException>(exception);
         }
 
-        [Fact]
-        [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
-        public async Task BuildRequestMessage_WithNullConfig_Equal()
+        [Theory, MemberData("BuildRequestMessageData")]
+        public async Task BuildRequestMessage_Equal(int fileLength, FileType fileType, ConversionTarget conversionTarget,
+            string mockConfig, string expectedConfig, string expectedMediaType)
         {
+            dynamic config = null;
+            if (!string.IsNullOrWhiteSpace(mockConfig))
+                config = JObject.Parse(mockConfig);
+
             var requestBuilder = new DocumentConversionRequestBuilder();
 
-            using (var ms = new MemoryStream(new byte[3384]))
+            using (var ms = new MemoryStream(new byte[fileLength]))
             {
-                var fileLength = ms.Length;
-                var request = requestBuilder.BuildRequestMessage(ServiceUrl, ms, FileType.Xml, ConversionTarget.Text);
+                var request = requestBuilder.BuildRequestMessage(ServiceUrl, ms, fileType, conversionTarget, config);
 
                 Assert.NotNull(request);
                 Assert.Equal(ServiceUrl, request.RequestUri.ToString());
@@ -65,154 +113,9 @@ namespace Watson.DocumentConversion.Tests.RequestBuilderTests
 
                 var file = await fileContent.ReadAsByteArrayAsync().ConfigureAwait(false);
 
-                Assert.Equal(fileLength, file.Length);
-                Assert.Equal("{\"conversion_target\":\"NORMALIZED_TEXT\"}",
-                    await configContent.ReadAsStringAsync().ConfigureAwait(false));
-                Assert.Equal("text/xhtml+xml", fileContent.Headers.ContentType.MediaType);
-            }
-        }
-
-        [Fact]
-        [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
-        public async Task BuildRequestMessage_WithAnswerUnitConfig_Equal()
-        {
-            dynamic config = JObject.Parse(MockConfig.MockAnswerUnitConfig);
-            var requestBuilder = new DocumentConversionRequestBuilder();
-
-            using (var ms = new MemoryStream(new byte[3384]))
-            {
-                var fileLength = ms.Length;
-                var request = requestBuilder.BuildRequestMessage(ServiceUrl, ms, FileType.Pdf,
-                    ConversionTarget.AnswerUnits, config);
-
-                Assert.NotNull(request);
-                Assert.Equal(ServiceUrl, request.RequestUri.ToString());
-                Assert.Equal(HttpMethod.Post, request.Method);
-
-                var content = (MultipartFormDataContent) request.Content;
-                var fileContent =
-                    (StreamContent) content.FirstOrDefault(x => x.Headers.ContentDisposition.Name == "file");
-                var configContent =
-                    (StringContent) content.FirstOrDefault(x => x.Headers.ContentDisposition.Name == "config");
-
-                Assert.NotNull(fileContent);
-                Assert.NotNull(configContent);
-
-                var file = await fileContent.ReadAsByteArrayAsync().ConfigureAwait(false);
-
-                Assert.Equal(fileLength, file.Length);
-                Assert.Equal(
-                    "{\"answer_units\":{\"selector_tags\":[\"h1\",\"h2\",\"h3\",\"h4\",\"h5\",\"h6\"]},\"conversion_target\":\"ANSWER_UNITS\"}",
-                    await configContent.ReadAsStringAsync().ConfigureAwait(false));
-                Assert.Equal("application/pdf", fileContent.Headers.ContentType.MediaType);
-            }
-        }
-
-        [Fact]
-        [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
-        public async Task BuildRequestMessage_WithHtmlConfig_Equal()
-        {
-            dynamic config = JObject.Parse(MockConfig.MockHtmlConfig);
-            var requestBuilder = new DocumentConversionRequestBuilder();
-
-            using (var ms = new MemoryStream(new byte[3384]))
-            {
-                var fileLength = ms.Length;
-                var request = requestBuilder.BuildRequestMessage(ServiceUrl, ms, FileType.Pdf, ConversionTarget.Html,
-                    config);
-
-                Assert.NotNull(request);
-                Assert.Equal(ServiceUrl, request.RequestUri.ToString());
-                Assert.Equal(HttpMethod.Post, request.Method);
-
-                var content = (MultipartFormDataContent) request.Content;
-                var fileContent =
-                    (StreamContent) content.FirstOrDefault(x => x.Headers.ContentDisposition.Name == "file");
-                var configContent =
-                    (StringContent) content.FirstOrDefault(x => x.Headers.ContentDisposition.Name == "config");
-
-                Assert.NotNull(fileContent);
-                Assert.NotNull(configContent);
-
-                var file = await fileContent.ReadAsByteArrayAsync().ConfigureAwait(false);
-
-                Assert.Equal(fileLength, file.Length);
-                Assert.Equal(
-                    "{\"normalize_html\":{\"exclude_tags_completely\":[\"script\",\"sup\"],\"exclude_tags_keep_content\":[\"font\",\"em\",\"span\"],\"keep_content\":{\"xpaths\":[\"//body/div[@id='content']\"]},\"exclude_content\":{\"xpaths\":[\"//*[@id='footer']\",\"//*[@id='navigation']\"]},\"keep_tag_attributes\":[\"*\"]},\"conversion_target\":\"NORMALIZED_HTML\"}",
-                    await configContent.ReadAsStringAsync().ConfigureAwait(false));
-                Assert.Equal("application/pdf", fileContent.Headers.ContentType.MediaType);
-            }
-        }
-
-        [Fact]
-        [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
-        public async Task BuildRequestMessage_WithPdfConfig_Equal()
-        {
-            dynamic config = JObject.Parse(MockConfig.MockPdfConfig);
-            var requestBuilder = new DocumentConversionRequestBuilder();
-
-            using (var ms = new MemoryStream(new byte[3384]))
-            {
-                var fileLength = ms.Length;
-                var request = requestBuilder.BuildRequestMessage(ServiceUrl, ms, FileType.Pdf, ConversionTarget.Text,
-                    config);
-
-                Assert.NotNull(request);
-                Assert.Equal(ServiceUrl, request.RequestUri.ToString());
-                Assert.Equal(HttpMethod.Post, request.Method);
-
-                var content = (MultipartFormDataContent) request.Content;
-                var fileContent =
-                    (StreamContent) content.FirstOrDefault(x => x.Headers.ContentDisposition.Name == "file");
-                var configContent =
-                    (StringContent) content.FirstOrDefault(x => x.Headers.ContentDisposition.Name == "config");
-
-                Assert.NotNull(fileContent);
-                Assert.NotNull(configContent);
-
-                var file = await fileContent.ReadAsByteArrayAsync().ConfigureAwait(false);
-
-                Assert.Equal(fileLength, file.Length);
-                Assert.Equal(
-                    "{\"pdf\":{\"heading\":{\"fonts\":[{\"level\":1,\"min_size\":24},{\"level\":2,\"min_size\":18,\"max_size\":23,\"bold\":true},{\"level\":3,\"min_size\":14,\"max_size\":17,\"italic\":false},{\"level\":4,\"min_size\":12,\"max_size\":13,\"name\":\"Times New Roman\"}]}},\"conversion_target\":\"NORMALIZED_TEXT\"}",
-                    await configContent.ReadAsStringAsync().ConfigureAwait(false));
-                Assert.Equal("application/pdf", fileContent.Headers.ContentType.MediaType);
-            }
-        }
-
-        [Fact]
-        [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
-        public async Task BuildRequestMessage_WithMsWordConfig_Equal()
-        {
-            dynamic config = JObject.Parse(MockConfig.MockMsWordConfig);
-            var requestBuilder = new DocumentConversionRequestBuilder();
-
-            using (var ms = new MemoryStream(new byte[3384]))
-            {
-                var fileLength = ms.Length;
-                var request = requestBuilder.BuildRequestMessage(ServiceUrl, ms, FileType.MsWord, ConversionTarget.Text,
-                    config);
-
-                Assert.NotNull(request);
-                Assert.Equal(ServiceUrl, request.RequestUri.ToString());
-                Assert.Equal(HttpMethod.Post, request.Method);
-
-                var content = (MultipartFormDataContent) request.Content;
-                var fileContent =
-                    (StreamContent) content.FirstOrDefault(x => x.Headers.ContentDisposition.Name == "file");
-                var configContent =
-                    (StringContent) content.FirstOrDefault(x => x.Headers.ContentDisposition.Name == "config");
-
-                Assert.NotNull(fileContent);
-                Assert.NotNull(configContent);
-
-                var file = await fileContent.ReadAsByteArrayAsync().ConfigureAwait(false);
-
-                Assert.Equal(fileLength, file.Length);
-                Assert.Equal(
-                    "{\"word\":{\"heading\":{\"fonts\":[{\"level\":1,\"min_size\":24},{\"level\":2,\"min_size\":18,\"max_size\":23,\"bold\":true},{\"level\":3,\"min_size\":14,\"max_size\":17,\"italic\":false},{\"level\":4,\"min_size\":12,\"max_size\":13,\"name\":\"Times New Roman\"}],\"styles\":[{\"level\":1,\"names\":[\"pullout heading\",\"pulloutheading\",\"heading\"]},{\"level\":2,\"names\":[\"subtitle\"]}]}},\"conversion_target\":\"NORMALIZED_TEXT\"}",
-                    await configContent.ReadAsStringAsync().ConfigureAwait(false));
-                Assert.Equal("application/msword", fileContent.Headers.ContentType.MediaType);
+                Assert.Equal(ms.Length, file.Length);
+                Assert.Equal(expectedConfig, await configContent.ReadAsStringAsync().ConfigureAwait(false));
+                Assert.Equal(expectedMediaType, fileContent.Headers.ContentType.MediaType);
             }
         }
     }

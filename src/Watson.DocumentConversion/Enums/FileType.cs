@@ -8,23 +8,28 @@ namespace Watson.DocumentConversion.Enums
     public enum FileType
     {
         /// <summary>
-        ///     Html file.
+        ///     Html file (.html).
         /// </summary>
         [EnumMember(Value = "text/html")] Html,
 
         /// <summary>
-        ///     Xml or XHtml file.
+        ///     Xml or XHtml file (.xml).
         /// </summary>
-        [EnumMember(Value = "text/xhtml+xml")] Xml,
+        [EnumMember(Value = "application/xhtml+xml")] Xml,
 
         /// <summary>
-        ///     Pdf file.
+        ///     Pdf file (.pdf).
         /// </summary>
         [EnumMember(Value = "application/pdf")] Pdf,
 
         /// <summary>
-        ///     MS Word file.
+        ///     MS Word file (.doc).
         /// </summary>
-        [EnumMember(Value = "application/msword")] MsWord
+        [EnumMember(Value = "application/msword")] MsWordDoc,
+
+        /// <summary>
+        ///     MS Word file (.docx).
+        /// </summary>
+        [EnumMember(Value = "application/vnd.openxmlformats-officedocument.wordprocessingml.document")] MsWordDocx
     }
 }
