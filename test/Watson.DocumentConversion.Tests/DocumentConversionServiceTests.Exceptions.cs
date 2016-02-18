@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Watson.DocumentConversion.Tests
 {
-    public class DocumentConversionServiceTests
+    public partial class DocumentConversionServiceTests
     {
         [Fact]
         public async Task ConvertDocumentToAnswersAsync_NullFile_ThrowsArgumentNullException()

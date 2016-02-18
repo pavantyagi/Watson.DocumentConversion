@@ -2,7 +2,7 @@
   "version": "1.0.0-*",
   "description": "Convert HTML, PDF, and Word documents into normalized HTML, plain text, or sets of JSON Answer units using IBM Watson Services Document Conversion.",
   "authors": [ "Damien Dennehy" ],
-  "tags": [ "ibm watson watson.documentconversion document conversion" ],
+  "tags": [ "ibm watson watson.documentconversion document conversion doc pdf html text" ],
   "projectUrl": "http://watsonnet.readthedocs.org/en/latest",
   "licenseUrl": "https://github.com/DamienDennehy/Watson.DocumentConversion/blob/master/LICENSE",
   "iconUrl": "https://raw.githubusercontent.com/DamienDennehy/Watson.DocumentConversion/master/icon.png",
