@@ -10,7 +10,8 @@ namespace Watson.DocumentConversion.Tests.RequestBuilderTests
 {
     public class RequestBuilderBaseTests
     {
-        private const string ServiceUrl = "https://gateway.watsonplatform.net/document-conversion/api/v1/convert_document?version=2015-12-15";
+        private const string ServiceUrl =
+            "https://gateway.watsonplatform.net/document-conversion/api/v1/convert_document?version=2015-12-15";
 
         public static IEnumerable<object[]> CreateRequestNullData => new[]
         {
