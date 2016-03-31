@@ -5,5 +5,5 @@ Watson.DocumentConversion is a .NET implementation of IBM Watson Services Docume
 
 [![Build](https://img.shields.io/appveyor/ci/damiendennehy/watson-documentconversion.svg)](https://ci.appveyor.com/project/DamienDennehy/watson-documentconversion)
 
-[![NuGet](https://img.shields.io/nuget/dt/Watson.DocumentConversion.svg)](https://www.nuget.org/packages/Watson.DocumentConversion/)
+[![NuGet](https://img.shields.io/nuget/vpre/Watson.DocumentConversion.svg)](https://www.nuget.org/packages/Watson.DocumentConversion/)
 
